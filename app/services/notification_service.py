@@ -87,17 +87,31 @@ class NotificationService:
 
             if not token_values:
                 continue
-
+            # this is for instant notification which runs along the fast API no scheduler delay
             # responses = await send_to_multiple_tokens(
             #     tokens=token_values,
             #     title="Task Status Updated",
             #     body=message
             # )
-            send_notification_task.delay(
-                token_values,
-                title="Task Status Updated",
-                body=message
-            )
+
+            #this block of code gets executed when we want to send notification with by using background task runner which is Celery (redis)
+            # send_notification_task.delay(
+            #     token_values,
+            #     title="Task Status Updated",
+            #     body=message
+            # )
+
+            ## this block of code is for timeout 
+            send_notification_task.apply_async(
+            args=[
+                token_values
+            ],
+            kwargs={
+                "title": "Task Status Updated",
+                "body": message
+            },
+            countdown=10
+        )
 
             # for response in responses:
 
