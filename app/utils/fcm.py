@@ -47,7 +47,8 @@ async def send_to_token(
 def send_to_multiple_tokens(
     tokens: list[str],
     title: str,
-    body: str
+    body: str,
+    link: str | None = None
 ):
 
     responses = []
@@ -61,6 +62,9 @@ def send_to_multiple_tokens(
                     title=title,
                     body=body
                 ),
+                data={
+                    "link": "http://127.0.0.1:8000/target"
+                },
                 token=token
             )
 
@@ -70,7 +74,8 @@ def send_to_multiple_tokens(
                 {
                     "token": token,
                     "success": True,
-                    "response": response
+                    "response": response,
+                    "link": link
                 }
             )
 

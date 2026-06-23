@@ -15,21 +15,13 @@
             position: fixed;
             top: 20px;
             right: 20px;
-
             width: 320px;
-
             background: #ffffff;
-
             border-radius: 10px;
-
             padding: 15px;
-
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-
             display: none;
-
             z-index: 9999;
-
             animation: slideIn 0.3s ease;
         }
 
@@ -38,7 +30,13 @@
         }
 
         .popup p {
-            margin: 0;
+            margin: 0 0 8px 0;
+        }
+
+        .popup a {
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
         }
 
         .popup.show {
@@ -50,7 +48,6 @@
                 opacity: 0;
                 transform: translateX(100%);
             }
-
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -62,232 +59,149 @@
 
     <h2>Firebase Cloud Messaging Test</h2>
 
-    <p>
-        Open Developer Tools (F12) → Console
-    </p>
+    <p>Open Developer Tools (F12) → Console</p>
 
-    <!-- Popup Container -->
     <div id="notification-popup" class="popup">
         <h3 id="popup-title"></h3>
         <p id="popup-body"></p>
+        <a id="popup-link" target="_blank" rel="noopener noreferrer"></a>
     </div>
 
     <script type="module">
-
-        import { initializeApp }
-        from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-
-        import {
-            getMessaging,
-            getToken,
-            onMessage
-        }
-        from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
-        
-
-    
-    // Import isSupported from the official Firebase CDN URL
-        import { isSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
-
-
-  
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
         const firebaseConfig = {
-            apiKey: "API_KEY",
-            authDomain: "DOMAIN-49268.firebaseapp.com",
-            projectId: "test-DOMAIN-49268",
-            storageBucket: "sample bucket .app",
-            messagingSenderId: "NULL",
-            appId: "3",
-            measurementId: "G-"
+            apiKey: "AIzaSyCD4SI9Ox_xhwJm2DucSIvi9XEW_cSfliQ",
+            authDomain: "test-project-49268.firebaseapp.com",
+            projectId: "test-project-49268",
+            storageBucket: "test-project-49268.firebasestorage.app",
+            messagingSenderId: "309520688010",
+            appId: "1:309520688010:web:fd2b94029d20ab86ac5e73",
+            measurementId: "G-VZG5G01783"
         };
 
         const app = initializeApp(firebaseConfig);
-
-        
-        // const checkNotificationSupport = async () => {
-        //     console.log("is this block working ");
-            
-        // const supported = await isSupported();
-        // if (!supported) {
-        //     console.log("Push messaging is disabled or unsupported by this browser.");
-        //     // Handle the UI gracefully (e.g., hide the "Enable Notifications" button)
-        //     return;
-        // }
-        
-        // console.log("Browser supports push notifications! Proceeding...");
-        // // Safe to proceed with registering service worker and fetching the token
-        // };
-        // checkNotificationSupport();
-        // import { isSupported, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
-
+        const messaging = getMessaging(app);
 
         // Register Service Worker
         if ("serviceWorker" in navigator) {
-
             navigator.serviceWorker
                 .register("/firebase-messaging-sw.js")
                 .then((registration) => {
-
-                    console.log(
-                        "✅ Service Worker Registered",
-                        registration
-                    );
-
+                    console.log("✅ Service Worker Registered", registration);
                 })
                 .catch((error) => {
-
-                    console.error(
-                        "❌ Service Worker Registration Failed",
-                        error
-                    );
-
+                    console.error("❌ Service Worker Registration Failed", error);
                 });
         }
 
-        const messaging = getMessaging(app);
-
-        // Request Notification Permission
+        // Request Notification Permission and Init
         Notification.requestPermission()
             .then(async (permission) => {
-
                 if (permission !== "granted") {
-
-                    console.log(
-                        "❌ Notification Permission Denied"
-                    );
-
+                    console.log("❌ Notification Permission Denied");
                     return;
                 }
-                const initializePushNotifications = async (messagingInstance) => {
-    // Step 1: Verify basic browser engine capability
-    const supported = await isSupported();
-    if (!supported) {
-        console.log("This browser profile or engine doesn't support Web Push APIs.");
-        return;
-    }
-
-    // Step 2: Try to get the token. Let the browser handle the heavy lifting.
-    try {
-        const token = await getToken(messaging, { 
-            vapidKey: "BB82dh1eQrcTB7YfsH6sNjyFdpT37xTEQB6guTCVZjyZozot-Sv8bx0ZV7VXWq9GbdVPBq2thbnxHXenLXq2FvU" 
-        });
-
-        if (token) {
-            console.log("Success! FCM Token generated:", token);
-            // Send this token to your FastAPI backend here!
-        } else {
-            console.log("No token received. Ensure notification permissions are granted.");
-        }
-
-    } catch (error) {
-        // Step 3: Catch any blocks (Brave, blocked settings, or network issues) right here
-        console.error("FCM Token generation failed:", error);
-
-        if (error.message.includes("unsupported-browser") || error.name === "AbortError") {
-            // This safely catches Brave privacy blocks and standard network subscription drops
-            alert("Notification setup failed. If you are using Brave, please verify that 'Use Google services for push messaging' is turned ON in brave://settings/privacy.");
-        } else {
-            alert("Could not enable notifications. Please check your browser's site permissions settings.");
-        }
-    }
-};
-        initializePushNotifications();
-
-                const token = await getToken(
-                    messaging,
-                    {
-                        vapidKey:
-                        "BB82dh1eQrcTB7YfsH6sNjyFdpT37xTEQB6guTCVZjyZozot-Sv8bx0ZV7VXWq9GbdVPBq2thbnxHXenLXq2FvU"
-                    }
-                );
-
-                console.log(
-                    "✅ FCM TOKEN:"
-                );
-
-                console.log(token);
-
+                await initializePushNotifications();
             })
             .catch((error) => {
-
-                console.error(
-                    "❌ Token Error",
-                    error
-                );
-
+                console.error("❌ Token Error", error);
             });
 
-        // Foreground Notification Listener
-        onMessage(
-            messaging,
-            (payload) => {
-
-                console.log(
-                    "🔔 Foreground Notification Received"
-                );
-
-                console.log(payload);
-
-                const title =
-                    payload.notification?.title ||
-                    "Notification";
-
-                const body =
-                    payload.notification?.body ||
-                    "";
-
-                // Browser Notification
-                new Notification(
-                    title,
-                    {
-                        body: body
-                    }
-                );
-
-                // In-page Popup
-                showPopup(
-                    title,
-                    body
-                );
+        const initializePushNotifications = async () => {
+            const supported = await isSupported();
+            if (!supported) {
+                console.log("This browser profile or engine doesn't support Web Push APIs.");
+                return;
             }
-        );
 
-        function showPopup(
-            title,
-            body
-        ) {
+            try {
+                const token = await getToken(messaging, { 
+                    vapidKey: "BB82dh1eQrcTB7YfsH6sNjyFdpT37xTEQB6guTCVZjyZozot-Sv8bx0ZV7VXWq9GbdVPBq2thbnxHXenLXq2FvU" 
+                });
 
-            const popup =
-                document.getElementById(
-                    "notification-popup"
-                );
+                if (token) {
+                    console.log("✅ Success! FCM Token generated:", token);
+                } else {
+                    console.log("No token received. Ensure notification permissions are granted.");
+                }
+            } catch (error) {
+                console.error("FCM Token generation failed:", error);
+            }
+        };
 
-            document.getElementById(
-                "popup-title"
-            ).innerText = title;
+        // Foreground Notification Listener
+        onMessage(messaging, (payload) => {
+            console.log("🔔 Foreground Notification Received", payload);
 
-            document.getElementById(
-                "popup-body"
-            ).innerText = body;
+            const title = payload.notification?.title || "Notification";
+            const body = payload.notification?.body || "";
+            
+            // FIX 1: Custom payload items are fetched from payload.data directly
+            const link = payload.data?.link || ""; 
 
-            popup.classList.add(
-                "show"
-            );
+            // FIX 2: Fixed native browser notification click behavior
+            const notification = new Notification(title, { body: body });
+            if (link) {
+                notification.onclick = (e) => {
+                    e.preventDefault();
+                    // window.open(link, '_self');
+                    // window.open(link, '_blank');
+                    window.location.href = link;
+                };
+            }
 
-            setTimeout(
-                () => {
+            // In-page Popup
+            showPopup(title, body, link);
+        });
 
-                    popup.classList.remove(
-                        "show"
-                    );
+        // function showPopup(title, body, link) {
+        //     const popup = document.getElementById("notification-popup");
+        //     const linkElement = document.getElementById("popup-link");
 
-                },
-                50000
-            );
-        }
+        //     document.getElementById("popup-title").innerText = title;
+        //     document.getElementById("popup-body").innerText = body;
 
+        //     // FIX 3: Correctly configure the link as a clickable HTML element
+        //     if (link) {
+        //         linkElement.href = link;
+        //         linkElement.innerText = " Link";
+        //         linkElement.style.display = "inline-block";
+        //     } else {
+        //         linkElement.style.display = "none";
+        //     }
+
+        //     popup.classList.add("show");
+
+        //     setTimeout(() => {
+        //         popup.classList.remove("show");
+        //     }, 50000);
+        // }
+    function showPopup(title, body, link) {
+    const popup = document.getElementById("notification-popup");
+    const linkElement = document.getElementById("popup-link");
+
+    document.getElementById("popup-title").innerText = title;
+    document.getElementById("popup-body").innerText = body;
+
+    if (link) {
+        linkElement.href = link;
+        // Enforce staying in the same frame/tab context
+        linkElement.removeAttribute("target"); 
+        
+        linkElement.innerText = "View Details";
+        linkElement.style.display = "inline-block";
+    } else {
+        linkElement.style.display = "none";
+    }
+
+    popup.classList.add("show");
+
+    setTimeout(() => {
+        popup.classList.remove("show");
+    }, 50000);
+}
     </script>
-
 </body>
 </html>

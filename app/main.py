@@ -64,6 +64,12 @@ async def get_fcm_page():
     file_path = os.path.join("templates", "index.html")
     return FileResponse(file_path)
 
+@app.get("/target")
+async def get_target_page():
+    # Points to your templates folder
+    file_path = os.path.join("templates", "target.html")
+    return FileResponse(file_path)
+
 # Route to serve the empty service worker (Crucial for FCM browser registration)
 @app.get("/firebase-messaging-sw.js")
 async def get_service_worker():

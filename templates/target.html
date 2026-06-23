@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect Target Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .alert {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+        .data-box {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="alert">
+            🎉 <strong>Success!</strong> You have successfully redirected to this page.
+        </div>
+        
+        <h1>Destination Page</h1>
+        <p>This is the landing page triggered by your FCM notification link action.</p>
+        
+        <h3>Passed URL Parameters:</h3>
+        <div id="params-output" class="data-box">No query parameters found in the URL.</div>
+    </div>
+
+    <script>
+        // Parse the URL query string to show any data you passed along during redirect
+        const queryParams = new URLSearchParams(window.location.search);
+        
+        if (queryParams.toString()) {
+            let htmlOutput = "<strong>Detected Data:</strong><br><br>";
+            queryParams.forEach((value, key) => {
+                htmlOutput += `• <strong>${key}</strong>: ${value}<br>`;
+            });
+            document.getElementById("params-output").innerHTML = htmlOutput;
+        }
+    </script>
+</body>
+</html>

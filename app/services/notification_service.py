@@ -102,17 +102,22 @@ class NotificationService:
             # )
 
             ## this block of code is for timeout 
-            send_notification_task.apply_async(
+
+            print("SENDING TASK TO CELERY")
+
+            
+            result = send_notification_task.apply_async(
             args=[
                 token_values
             ],
             kwargs={
                 "title": "Task Status Updated",
-                "body": message
+                "body": message,
+                "link": "https://github.com/"
             },
             countdown=10
         )
-
+        print("TASK ID:", result.id)
             # for response in responses:
 
             #     if response["success"]:
